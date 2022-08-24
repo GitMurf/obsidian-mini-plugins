@@ -1,4 +1,5 @@
 import { App, PluginSettingTab, Setting, TFile, TFolder } from 'obsidian';
+import { sleepDelay } from './helpers';
 import MyPlugin from './main';
 import { MyPluginSettings } from './types';
 
@@ -28,6 +29,8 @@ export class SampleSettingTab extends PluginSettingTab {
         refreshButton.onClickEvent(async() => {
             await this.reloadPlugin();
         });
+        containerEl.createEl('br');
+        containerEl.createEl('br');
 
         let currentSnippets = this.plugin.settings.MyConfigSettings.mySnippets;
         //console.log(currentSnippets);
@@ -73,7 +76,9 @@ export class SampleSettingTab extends PluginSettingTab {
     async reloadPlugin() {
         console.log(`Manually reloading plugin: ${this.plugin.pluginName}`);
         await this.plugin.saveSettings();
+        await sleepDelay(this.plugin, 1);
         this.plugin.unload();
+        await sleepDelay(this.plugin, 2);
         this.plugin.load();
     }
 }
