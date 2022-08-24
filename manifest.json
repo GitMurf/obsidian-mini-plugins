@@ -1,0 +1,11 @@
+{
+    "id": "obsidian-mini-plugins",
+    "name": "obsidian-mini-plugins",
+    "version": "0.1",
+    "minAppVersion": "0.13.23",
+    "description": "",
+    "author": "GitMurf",
+    "authorUrl": "https://github.com/GitMurf",
+    "isDesktopOnly": false
+}
+
