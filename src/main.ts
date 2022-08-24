@@ -56,7 +56,8 @@ export default class MyPlugin extends Plugin {
                         if (codeBlockWithoutBackticks) { codeBlockStr = codeBlockWithoutBackticks[1] }
                         //console.log(codeBlockStr);
                         Function("thisPlugin", codeBlockStr)(this);
-                        console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
+                        console.log(`Loaded plugin snippet: '${eachProp}'`);
+                        //console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
                         new Notice(`Loaded plugin snippet: '${eachProp}'`, 20000);
                     } else {
                         console.log(`${eachProp} file not found`);

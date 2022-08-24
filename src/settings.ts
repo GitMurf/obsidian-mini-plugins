@@ -50,7 +50,7 @@ export class SampleSettingTab extends PluginSettingTab {
                     }
 
                     let newSetting = new Setting(containerEl);
-                    newSetting.setName(tFileObject.basename);
+                    newSetting.setName(tFileObject.basename.replace(/^mini\-plugins\./, ''));
                     newSetting.addToggle(toggleComp => {
                         toggleComp.setValue(thisSnippet);
                         toggleComp.onChange(async (value) => {
@@ -76,9 +76,8 @@ export class SampleSettingTab extends PluginSettingTab {
     async reloadPlugin() {
         console.log(`Manually reloading plugin: ${this.plugin.pluginName}`);
         await this.plugin.saveSettings();
-        await sleepDelay(this.plugin, 1);
         this.plugin.unload();
-        await sleepDelay(this.plugin, 2);
+        await sleepDelay(this.plugin, 1);
         this.plugin.load();
     }
 }
