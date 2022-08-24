@@ -22,7 +22,9 @@ export interface MyPluginSettings {
 }
 
 interface SettingsObject {
-    mySetting: string;
+    mySnippets: {
+        [key: string]: boolean;
+    };
 }
 
 export interface SyncPlugin extends Plugin_2 {

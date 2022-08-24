@@ -1,4 +1,4 @@
-import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
+import { Editor, MarkdownView, Notice, Plugin, TFile, TFolder } from 'obsidian';
 import { formatDate, mySetIntervalFunction } from './helpers';
 import { DEFAULT_SETTINGS, SampleSettingTab } from './settings';
 import { MyPluginSettings } from './types';
@@ -35,8 +35,50 @@ export default class MyPlugin extends Plugin {
             }
         });
 
-        // This adds a settings tab so the user can configure various aspects of the plugin
-        this.addSettingTab(new SampleSettingTab(this.app, this));
+        this.app.workspace.onLayoutReady(async () => {
+            //console.log("Layout ready");
+            // This adds a settings tab so the user can configure various aspects of the plugin
+            this.addSettingTab(new SampleSettingTab(this.app, this));
+
+            const folderPathStr = "mini-plugins";
+            let currentSnippets = this.settings.MyConfigSettings.mySnippets;
+            //console.log(currentSnippets);
+            for (const eachProp in currentSnippets) {
+                if (currentSnippets[eachProp] === true) {
+                    //console.log(`${eachProp} is set to be loaded`);
+                    const tFileObject = this.app.vault.getAbstractFileByPath(`${folderPathStr}/${eachProp}.md`);
+                    if (tFileObject instanceof TFile) {
+                        //console.log(`Found file: ${tFileObject.basename}`);
+                        const fileContent = await this.app.vault.read(tFileObject);
+                        // remove code block back ticks from start and end of file content string
+                        let codeBlockStr = fileContent;
+                        const codeBlockWithoutBackticks = codeBlockStr.match(/^\`\`\`.*\n([\s\S]*)\n\`\`\`$/);
+                        if (codeBlockWithoutBackticks) { codeBlockStr = codeBlockWithoutBackticks[1] }
+                        //console.log(codeBlockStr);
+                        Function("thisPlugin", codeBlockStr)(this);
+                        console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
+                        new Notice(`Loaded plugin snippet: '${eachProp}'`, 20000);
+                    } else {
+                        console.log(`${eachProp} file not found`);
+                    }
+                } else {
+                    console.log(`**** ${eachProp} will NOT be loaded`);
+                }
+            }
+
+            // Re-open the settings tab for my plugin
+            const settingsWindow = document.querySelector('.modal.mod-settings');
+            if (settingsWindow) {
+                const settingsTabs = settingsWindow.querySelectorAll('.vertical-tab-nav-item') as NodeListOf<HTMLElement>;
+                if (settingsTabs) {
+                    Array.from(settingsTabs).forEach(tab => {
+                        if (tab.textContent === this.manifest.name) {
+                            tab.click();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     onunload() {
