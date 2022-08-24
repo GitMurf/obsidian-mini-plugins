@@ -26,7 +26,7 @@ export class SampleSettingTab extends PluginSettingTab {
 
         // Add a refresh button to reload all snippets
         const refreshButton = containerEl.createEl('button', { text: 'Refresh' });
-        refreshButton.onClickEvent(async() => {
+        refreshButton.onClickEvent(async () => {
             await this.reloadPlugin();
         });
         containerEl.createEl('br');
@@ -37,16 +37,20 @@ export class SampleSettingTab extends PluginSettingTab {
         const folderPathStr = "mini-plugins";
         const tFolderObject = this.app.vault.getAbstractFileByPath(folderPathStr);
         let foundFiles: string[] = [];
+        let listUpdated = false;
         if (tFolderObject instanceof TFolder) {
             tFolderObject.children.forEach(async (tFileObject) => {
                 if (tFileObject instanceof TFile) {
                     //console.log(`Found file: ${tFileObject.basename}`);
+                    // Archive files so they are not shown in the list
+                    if (tFileObject.basename.startsWith("archive.")) { return };
                     foundFiles.push(tFileObject.basename);
                     let thisSnippet = currentSnippets[tFileObject.basename];
                     if (thisSnippet === undefined) {
                         console.log(`'${tFileObject.basename}' Snippet not found... adding it to the Settings list`);
                         currentSnippets[tFileObject.basename] = false;
                         thisSnippet = false;
+                        listUpdated = true;
                     }
 
                     let newSetting = new Setting(containerEl);
@@ -64,20 +68,28 @@ export class SampleSettingTab extends PluginSettingTab {
         } else {
             console.log("Folder not found");
         }
+        let needToReload = false;
         for (const eachProp in currentSnippets) {
             if (!foundFiles.includes(eachProp)) {
-                console.log(`${eachProp} not found in folder... deleting it from Settings list`);
+                console.log(`'${eachProp}' not found in folder... deleting it from Settings list`);
                 delete currentSnippets[eachProp];
+                needToReload = true;
             }
         }
-        await this.plugin.saveSettings();
+
+        if (needToReload) {
+            await this.reloadPlugin();
+        } else if (listUpdated) {
+            await this.plugin.saveSettings();
+        }
     }
 
     async reloadPlugin() {
         console.log(`Manually reloading plugin: ${this.plugin.pluginName}`);
         await this.plugin.saveSettings();
-        this.plugin.unload();
-        await sleepDelay(this.plugin, 1);
-        this.plugin.load();
+        // Adding await even though API docs says it is not async. Licat recommended to still add it in Discord chat.
+        await this.plugin.unload();
+        //await sleepDelay(this.plugin, 1);
+        await this.plugin.load();
     }
 }
