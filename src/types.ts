@@ -10,6 +10,8 @@ declare module "obsidian" {
     interface App {
         plugins: {
             plugins: Record<string, Plugin>;
+            disablePlugin(pluginId: string): Promise<void>;
+            enablePlugin(pluginId: string): Promise<void>;
         };
         internalPlugins: {
             plugins: Record<string, Plugin>;

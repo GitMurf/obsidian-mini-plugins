@@ -1,5 +1,4 @@
 import { App, PluginSettingTab, Setting, TFile, TFolder } from 'obsidian';
-import { sleepDelay } from './helpers';
 import MyPlugin from './main';
 import { MyPluginSettings } from './types';
 
@@ -87,9 +86,9 @@ export class SampleSettingTab extends PluginSettingTab {
     async reloadPlugin() {
         console.log(`Manually reloading plugin: ${this.plugin.pluginName}`);
         await this.plugin.saveSettings();
-        // Adding await even though API docs says it is not async. Licat recommended to still add it in Discord chat.
-        await this.plugin.unload();
-        //await sleepDelay(this.plugin, 1);
-        await this.plugin.load();
+        const pluginId = this.plugin.manifest.id;
+        // Licat recommended using disable/enable instead of unload/load
+        await app.plugins.disablePlugin(pluginId);
+        await app.plugins.enablePlugin(pluginId);
     }
 }
