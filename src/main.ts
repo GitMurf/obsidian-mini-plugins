@@ -1,8 +1,7 @@
-import { Editor, MarkdownView, Notice, Plugin, TFile, TFolder } from 'obsidian';
-import { formatDate, mySetIntervalFunction } from './helpers';
+import { Notice, Plugin, TFile } from 'obsidian';
+import { formatDate } from './helpers';
 import { DEFAULT_SETTINGS, SampleSettingTab } from './settings';
 import { MyPluginSettings } from './types';
-import { SampleModal } from './ui';
 
 export default class MyPlugin extends Plugin {
     settings: MyPluginSettings = DEFAULT_SETTINGS;
@@ -13,6 +12,7 @@ export default class MyPlugin extends Plugin {
 
         await this.loadSettings();
 
+        /*
         // This creates an icon in the left ribbon.
         // Icon options I like alarm-clock, alarm-plus, bell-plus... see here: https://lucide.dev/
         const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -34,6 +34,7 @@ export default class MyPlugin extends Plugin {
                 new SampleModal(this.app).open();
             }
         });
+        */
 
         this.app.workspace.onLayoutReady(async () => {
             //console.log("Layout ready");
