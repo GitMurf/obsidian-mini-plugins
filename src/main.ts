@@ -1,4 +1,5 @@
 import { Notice, Plugin, TFile } from 'obsidian';
+import * as obsidianApi from 'obsidian';
 import { formatDate } from './helpers';
 import { DEFAULT_SETTINGS, SampleSettingTab } from './settings';
 import { MyPluginSettings } from './types';
@@ -6,6 +7,7 @@ import { MyPluginSettings } from './types';
 export default class MyPlugin extends Plugin {
     settings: MyPluginSettings = DEFAULT_SETTINGS;
     pluginName: string = 'Obsidian Mini Plugins';
+    passedModules: Record<string, object> = {};
 
     async onload() {
         console.log(`Loading plugin: ${this.pluginName} at [${formatDate()}]`);
@@ -40,6 +42,9 @@ export default class MyPlugin extends Plugin {
             //console.log("Layout ready");
             // This adds a settings tab so the user can configure various aspects of the plugin
             this.addSettingTab(new SampleSettingTab(this.app, this));
+
+            // This adds the obsidian module to be used by the mini plugin snippets (can add others later if needed)
+            this.passedModules.obsidianApi = obsidianApi;
 
             const folderPathStr = "mini-plugins";
             let currentSnippets = this.settings.MyConfigSettings.mySnippets;
