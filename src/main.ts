@@ -8,6 +8,7 @@ export default class MyPlugin extends Plugin {
     settings: MyPluginSettings = DEFAULT_SETTINGS;
     pluginName: string = 'Obsidian Mini Plugins';
     passedModules: Record<string, object> = {};
+    miniPlugins = {};
 
     async onload() {
         console.log(`Loading plugin: ${this.pluginName} at [${formatDate()}]`);
