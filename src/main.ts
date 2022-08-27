@@ -1,4 +1,4 @@
-import { Notice, Plugin, TFile } from 'obsidian';
+import { Notice, Plugin, TFile, Platform } from 'obsidian';
 import * as obsidianApi from 'obsidian';
 import { formatDate } from './helpers';
 import { DEFAULT_SETTINGS, SampleSettingTab } from './settings';
@@ -65,7 +65,7 @@ export default class MyPlugin extends Plugin {
                         Function("thisPlugin", codeBlockStr)(this);
                         console.log(`Loaded plugin snippet: '${eachProp}'`);
                         //console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
-                        new Notice(`Loaded plugin snippet: '${eachProp}'`, 20000);
+                        new Notice(`Loaded plugin snippet: '${eachProp}'`, 10000);
                     } else {
                         console.log(`${eachProp} file not found`);
                     }
@@ -74,16 +74,27 @@ export default class MyPlugin extends Plugin {
                 }
             }
 
-            // Re-open the settings tab for my plugin
-            const settingsWindow = document.querySelector('.modal.mod-settings');
-            if (settingsWindow) {
-                const settingsTabs = settingsWindow.querySelectorAll('.vertical-tab-nav-item') as NodeListOf<HTMLElement>;
-                if (settingsTabs) {
-                    Array.from(settingsTabs).forEach(tab => {
-                        if (tab.textContent === this.manifest.name) {
-                            tab.click();
-                        }
-                    });
+            // Re-open the settings tab for my plugin (if desktop app)
+            if (Platform.isMobileApp) {
+                const settingsModal = document.querySelector('.modal.mod-settings');
+                if (settingsModal) {
+                    const settingsCloseBtn = settingsModal.querySelector('.modal-close-button') as HTMLElement;
+                    if (settingsCloseBtn) {
+                        settingsCloseBtn.click();
+                        if (this.app.workspace.leftSplit.collapsed === false) { app.workspace.leftSplit.collapse() }
+                    }
+                }
+            } else {
+                const settingsWindow = document.querySelector('.modal.mod-settings');
+                if (settingsWindow) {
+                    const settingsTabs = settingsWindow.querySelectorAll('.vertical-tab-nav-item') as NodeListOf<HTMLElement>;
+                    if (settingsTabs) {
+                        Array.from(settingsTabs).forEach(tab => {
+                            if (tab.textContent === this.manifest.name) {
+                                tab.click();
+                            }
+                        });
+                    }
                 }
             }
         });
