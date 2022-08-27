@@ -8,7 +8,9 @@ export default class MyPlugin extends Plugin {
     settings: MyPluginSettings = DEFAULT_SETTINGS;
     pluginName: string = 'Obsidian Mini Plugins';
     passedModules: Record<string, object> = {};
-    miniPlugins = {};
+    miniPlugins = {
+        platform: Platform
+    };
 
     async onload() {
         console.log(`Loading plugin: ${this.pluginName} at [${formatDate()}]`);
@@ -75,7 +77,7 @@ export default class MyPlugin extends Plugin {
             }
 
             // Re-open the settings tab for my plugin (if desktop app)
-            if (Platform.isMobileApp) {
+            if (this.miniPlugins.platform.isMobileApp) {
                 const settingsModal = document.querySelector('.modal.mod-settings');
                 if (settingsModal) {
                     const settingsCloseBtn = settingsModal.querySelector('.modal-close-button') as HTMLElement;
