@@ -27,6 +27,9 @@ interface SettingsObject {
     mySnippets: {
         [key: string]: boolean;
     };
+    myFunctions: {
+        [key: string]: boolean;
+    };
 }
 
 export interface SyncPlugin extends Plugin_2 {

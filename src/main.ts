@@ -9,6 +9,7 @@ export default class MyPlugin extends Plugin {
     pluginName: string = 'Obsidian Mini Plugins';
     passedModules: Record<string, object> = {};
     miniPlugins = {
+        functions: {},
         platform: Platform
     };
 
@@ -49,13 +50,16 @@ export default class MyPlugin extends Plugin {
             // This adds the obsidian module to be used by the mini plugin snippets (can add others later if needed)
             this.passedModules.obsidianApi = obsidianApi;
 
-            const folderPathStr = "mini-plugins";
-            let currentSnippets = this.settings.MyConfigSettings.mySnippets;
-            //console.log(currentSnippets);
-            for (const eachProp in currentSnippets) {
-                if (currentSnippets[eachProp] === true) {
+            const pluginFolderPath = "mini-plugins";
+
+            // First load the files in the functions folder to create helper functions to re-use in the mini plugins
+            const funcFolderPath = `${pluginFolderPath}/functions`;
+            const currentFunctions = this.settings.MyConfigSettings.myFunctions;
+            //console.log(currentFunctions);
+            for (const eachProp in currentFunctions) {
+                if (currentFunctions[eachProp] === true) {
                     //console.log(`${eachProp} is set to be loaded`);
-                    const tFileObject = this.app.vault.getAbstractFileByPath(`${folderPathStr}/${eachProp}.md`);
+                    const tFileObject = this.app.vault.getAbstractFileByPath(`${funcFolderPath}/${eachProp}.md`);
                     if (tFileObject instanceof TFile) {
                         //console.log(`Found file: ${tFileObject.basename}`);
                         const fileContent = await this.app.vault.read(tFileObject);
@@ -65,14 +69,41 @@ export default class MyPlugin extends Plugin {
                         if (codeBlockWithoutBackticks) { codeBlockStr = codeBlockWithoutBackticks[1] }
                         //console.log(codeBlockStr);
                         Function("thisPlugin", codeBlockStr)(this);
-                        console.log(`Loaded plugin snippet: '${eachProp}'`);
-                        //console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
-                        new Notice(`Loaded plugin snippet: '${eachProp}'`, 10000);
+                        console.log(`Loaded [FUNCTION] snippet: '${eachProp}'`);
+                        //console.log(`Loaded [FUNCTION] snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
+                        new Notice(`Loaded [FUNCTION] snippet: '${eachProp}'`, 5000);
                     } else {
                         console.log(`${eachProp} file not found`);
                     }
                 } else {
-                    console.log(`**** ${eachProp} will NOT be loaded`);
+                    console.log(`**** [FUNCTION] **** ${eachProp} will NOT be loaded`);
+                }
+            }
+
+            // Next load the files in the mini plugins folder to create mini plugins
+            const currentSnippets = this.settings.MyConfigSettings.mySnippets;
+            //console.log(currentSnippets);
+            for (const eachProp in currentSnippets) {
+                if (currentSnippets[eachProp] === true) {
+                    //console.log(`${eachProp} is set to be loaded`);
+                    const tFileObject = this.app.vault.getAbstractFileByPath(`${pluginFolderPath}/${eachProp}.md`);
+                    if (tFileObject instanceof TFile) {
+                        //console.log(`Found file: ${tFileObject.basename}`);
+                        const fileContent = await this.app.vault.read(tFileObject);
+                        // remove code block back ticks from start and end of file content string
+                        let codeBlockStr = fileContent;
+                        const codeBlockWithoutBackticks = codeBlockStr.match(/^\`\`\`.*\n([\s\S]*)\n\`\`\`$/);
+                        if (codeBlockWithoutBackticks) { codeBlockStr = codeBlockWithoutBackticks[1] }
+                        //console.log(codeBlockStr);
+                        Function("thisPlugin", codeBlockStr)(this);
+                        console.log(`Loaded [PLUGIN] snippet: '${eachProp}'`);
+                        //console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
+                        new Notice(`Loaded [PLUGIN] snippet: '${eachProp}'`, 10000);
+                    } else {
+                        console.log(`${eachProp} file not found`);
+                    }
+                } else {
+                    console.log(`**** [PLUGIN] **** ${eachProp} will NOT be loaded`);
                 }
             }
 
