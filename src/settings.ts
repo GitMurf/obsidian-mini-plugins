@@ -22,7 +22,7 @@ export class SampleSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Mini Plugin Settings' });
+        containerEl.createEl('h1', { text: 'Mini Plugin Settings' });
 
         // Add a refresh button to reload all snippets
         const refreshButton = containerEl.createEl('button', { text: 'Refresh' });
@@ -34,18 +34,18 @@ export class SampleSettingTab extends PluginSettingTab {
 
         containerEl.createEl('h3', { text: 'Mini Plugin Snippets' });
 
-        let currentSnippets = this.plugin.settings.MyConfigSettings.mySnippets;
+        const currentSnippets = this.plugin.settings.MyConfigSettings.mySnippets;
         //console.log(currentSnippets);
         const folderPathStr = "mini-plugins";
         let tFolderObject = this.app.vault.getAbstractFileByPath(folderPathStr);
-        let foundFiles: string[] = [];
+        const foundFiles: string[] = [];
         let listUpdated = false;
         if (tFolderObject instanceof TFolder) {
             tFolderObject.children.forEach(async (tFileObject) => {
                 if (tFileObject instanceof TFile) {
                     //console.log(`Found file: ${tFileObject.basename}`);
                     // Archive files so they are not shown in the list
-                    if (tFileObject.basename.startsWith("archive.")) { return };
+                    if (tFileObject.basename.startsWith("archive.")) { return }
                     foundFiles.push(tFileObject.basename);
                     let thisSnippet = currentSnippets[tFileObject.basename];
                     if (thisSnippet === undefined) {
@@ -55,8 +55,24 @@ export class SampleSettingTab extends PluginSettingTab {
                         listUpdated = true;
                     }
 
-                    let newSetting = new Setting(containerEl);
-                    newSetting.setName(tFileObject.basename.replace(/^mini\-plugins\./, ''));
+                    const newSetting = new Setting(containerEl);
+
+                    const splitByDot = tFileObject.basename.split(".");
+                    let descString = "";
+                    for (let i = 0; i < splitByDot.length; i++) {
+                        if (i === splitByDot.length - 1) {
+                            newSetting.setName(splitByDot[i]);
+                        } else {
+                            newSetting.setName(splitByDot[i] + ".");
+                            if (descString.length > 0) {
+                                descString += ` [${splitByDot[i]}]`;
+                            } else {
+                                descString += `[${splitByDot[i]}]`;
+                            }
+                        }
+                    }
+
+                    if (descString.length > 0) { newSetting.setDesc(descString); }
                     newSetting.addToggle(toggleComp => {
                         toggleComp.setValue(thisSnippet);
                         toggleComp.onChange(async (value) => {
@@ -73,18 +89,18 @@ export class SampleSettingTab extends PluginSettingTab {
 
         containerEl.createEl('h3', { text: 'Mini Plugin Functions' });
 
-        let currentFunctions = this.plugin.settings.MyConfigSettings.myFunctions;
+        const currentFunctions = this.plugin.settings.MyConfigSettings.myFunctions;
         //console.log(currentFunctions);
         const funcFolderPath = `${folderPathStr}/functions`;
         tFolderObject = this.app.vault.getAbstractFileByPath(funcFolderPath);
-        let foundFuncFiles: string[] = [];
+        const foundFuncFiles: string[] = [];
         let funcListUpdated = false;
         if (tFolderObject instanceof TFolder) {
             tFolderObject.children.forEach(async (tFileObject) => {
                 if (tFileObject instanceof TFile) {
                     //console.log(`Found file: ${tFileObject.basename}`);
                     // Archive files so they are not shown in the list
-                    if (tFileObject.basename.startsWith("archive.")) { return };
+                    if (tFileObject.basename.startsWith("archive.")) { return }
                     foundFuncFiles.push(tFileObject.basename);
                     let thisSnippet = currentFunctions[tFileObject.basename];
                     if (thisSnippet === undefined) {
@@ -94,8 +110,24 @@ export class SampleSettingTab extends PluginSettingTab {
                         funcListUpdated = true;
                     }
 
-                    let newSetting = new Setting(containerEl);
-                    newSetting.setName(tFileObject.basename.replace(/^mini\-plugins\.function\./, ''));
+                    const newSetting = new Setting(containerEl);
+
+                    const splitByDot = tFileObject.basename.split(".");
+                    let descString = "";
+                    for (let i = 0; i < splitByDot.length; i++) {
+                        if (i === splitByDot.length - 1) {
+                            newSetting.setName(splitByDot[i]);
+                        } else {
+                            newSetting.setName(splitByDot[i] + ".");
+                            if (descString.length > 0) {
+                                descString += ` [${splitByDot[i]}]`;
+                            } else {
+                                descString += `[${splitByDot[i]}]`;
+                            }
+                        }
+                    }
+
+                    if (descString.length > 0) { newSetting.setDesc(descString); }
                     newSetting.addToggle(toggleComp => {
                         toggleComp.setValue(thisSnippet);
                         toggleComp.onChange(async (value) => {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Notice, Plugin, TFile, Platform } from 'obsidian';
 import * as obsidianApi from 'obsidian';
 import { formatDate } from './helpers';
@@ -6,10 +7,11 @@ import { MyPluginSettings } from './types';
 
 export default class MyPlugin extends Plugin {
     settings: MyPluginSettings = DEFAULT_SETTINGS;
-    pluginName: string = 'Obsidian Mini Plugins';
+    pluginName = 'Obsidian Mini Plugins';
     passedModules: Record<string, object> = {};
     miniPlugins = {
         functions: {},
+        classes: {},
         platform: Platform
     };
 
@@ -65,13 +67,13 @@ export default class MyPlugin extends Plugin {
                         const fileContent = await this.app.vault.read(tFileObject);
                         // remove code block back ticks from start and end of file content string
                         let codeBlockStr = fileContent;
-                        const codeBlockWithoutBackticks = codeBlockStr.match(/^\`\`\`.*\n([\s\S]*)\n\`\`\`$/);
+                        const codeBlockWithoutBackticks = codeBlockStr.match(/^```.*\n([\s\S]*)\n```$/);
                         if (codeBlockWithoutBackticks) { codeBlockStr = codeBlockWithoutBackticks[1] }
                         //console.log(codeBlockStr);
                         Function("thisPlugin", codeBlockStr)(this);
                         console.log(`Loaded [FUNCTION] snippet: '${eachProp}'`);
                         //console.log(`Loaded [FUNCTION] snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
-                        new Notice(`Loaded [FUNCTION] snippet: '${eachProp}'`, 5000);
+                        // new Notice(`Loaded [FUNCTION] snippet: '${eachProp}'`, 5000);
                     } else {
                         console.log(`${eachProp} file not found`);
                     }
@@ -92,13 +94,13 @@ export default class MyPlugin extends Plugin {
                         const fileContent = await this.app.vault.read(tFileObject);
                         // remove code block back ticks from start and end of file content string
                         let codeBlockStr = fileContent;
-                        const codeBlockWithoutBackticks = codeBlockStr.match(/^\`\`\`.*\n([\s\S]*)\n\`\`\`$/);
+                        const codeBlockWithoutBackticks = codeBlockStr.match(/^```.*\n([\s\S]*)\n```$/);
                         if (codeBlockWithoutBackticks) { codeBlockStr = codeBlockWithoutBackticks[1] }
                         //console.log(codeBlockStr);
                         Function("thisPlugin", codeBlockStr)(this);
                         console.log(`Loaded [PLUGIN] snippet: '${eachProp}'`);
                         //console.log(`Loaded plugin snippet: '${eachProp}' with the following code:\n${codeBlockStr}`);
-                        new Notice(`Loaded [PLUGIN] snippet: '${eachProp}'`, 10000);
+                        // new Notice(`Loaded [PLUGIN] snippet: '${eachProp}'`, 10000);
                     } else {
                         console.log(`${eachProp} file not found`);
                     }
